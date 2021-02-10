@@ -7,7 +7,7 @@ class War():
 		card_values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
 		suit_symbols = ['♠','♦','♥','♣']
 		self.deck_of_cards = list(product(card_values, suit_symbols))
-		self.relevent_card_values = {'A': 1, 'J': 11, 'Q': 12, 'K': 13}
+		self.relevent_card_values = {'A': 14, 'J': 11, 'Q': 12, 'K': 13}
 
 		print('Welcome to WAR!!')
 		print('A Cody Brooks Python Program')
@@ -28,7 +28,7 @@ class War():
 				break
 
 			if hand_value > 1: 
-				self.tie_visiual(player_card, cpu_card)
+				self.tie_visiual(player_old_card, cpu_old_card)
 				winner = self.who_gets_the_point(player_card, cpu_card)
 				self.tie_break(player_old_card, cpu_old_card, player_card, cpu_card, winner)
 			else: 
@@ -40,21 +40,27 @@ class War():
 				if hand_value > 1:
 					hand_value = 1
 				print('You win that round')
+				print('Current Score:  Your Score: {}  CPU Score: {}'.format(
+					player_score, cpu_score))
 			elif winner == 0:
 				cpu_score += hand_value
 				if hand_value > 1:
 					hand_value = 1 
 				print('The computer wins that round')
+				print('Current Score:  Your Score: {}  CPU Score: {}'.format(
+					player_score, cpu_score))				
 			else: 
 				print('We got a tie')
+				print('Current Score:  Your Score: {}  CPU Score: {}'.format(
+					player_score, cpu_score))				
 				print('Play your next three cards face down')
 				player_old_card = player_card
 				cpu_old_card = cpu_card
 
 
-			if winner == 'TIE' and i <= 22:
-				hand_value += 3
-				i += 3
+			if winner == 'TIE' and i <= 21:
+				hand_value += 4
+				i += 4
 			elif winner == 'TIE':
 				hand_value = 25 - i
 				i = 25
@@ -62,18 +68,19 @@ class War():
 				i += 1
 
 		if player_score > cpu_score:
-			print('You beat the computer. Nice Work.')
+			print('\nYou beat the computer. Nice Work.')
 			print(f'Final Score: Player 1 - {player_score}  Computer - {cpu_score}')
 		elif player_score == cpu_score:
-			print('Tie Game. Everyone Wins?')
+			print('\nTie Game. Everyone Wins?')
 			print(f'Final Score: Player 1 - {player_score}  Computer - {cpu_score}')
 		else: 
-			print('You Lose. You bring shame to your dojo.')
+			print('\nYou Lose. You bring shame to your dojo.')
 			print(f'Final Score: Player 1 - {player_score}  Computer - {cpu_score}')
 
 		play_again = input("Play again 'y' or 'n':  ")
-		if y:
+		if play_again == 'y':
 			self.game_loop()
+
 
 	def shuffle_and_deal(self):
 		"""Randomly shuffles a deck of cards and splits it into two hands"""
@@ -103,29 +110,40 @@ class War():
 
 	def war_round_visiual(self, card1, card2):
 		if card1[0] in '23456789JKQA':
-			x = " "
+			player_rank = card1[0] + ' '
+			y = ' ' 
+		else: 
+			player_rank = card1[0]
+			y= ''
+		if card2[0] in '23456789JQKA':
+			cpu_rank = card2[0] + ' '
+			x = ' '
 		else:
+			cpu_rank = card2[0]
 			x = ''
-		
-		if card2[0] in '23456789JKA':
-			y = '  '
-		else:
-			y = ' '
 
 		print('╔════════════╗          ╔════════════╗')
-		print('║ {}     {}    ║          ║ {}  {}      ║'.format(card1[0], x, card2[0], y))
+		print('║ {}         ║          ║ {}         ║'.format(player_rank, cpu_rank))
 		print('║ {}          ║          ║ {}          ║'.format(card1[1], card2[1]))
 		print('║            ║          ║            ║')
 		print('║      {}     ║  vrs.    ║      {}     ║'.format(card1[1], card2[1]))
 		print('║            ║          ║            ║')
 		print('║          {} ║          ║          {} ║'.format(card1[1], card2[1]))
-		print('║      {}   {} ║          ║          {} ║'.format(x ,card1[0], card2[0]))
+		print('║    {}     {} ║          ║    {}     {} ║'.format(y, player_rank.rstrip(),x, cpu_rank.rstrip()))
 		print('╚════════════╝          ╚════════════╝')
 		print('  Your Card             Computers Card')
 
 	def tie_visiual(self, player1, cpu1):
+		if player1[0] == '10':
+			play_view = '1'
+		else:
+			play_view = player1[0]
+		if cpu1[0] == '10':
+			cpu_view = '1'
+		else:
+			cpu_view = cpu1[0]	
 		print('╔════════════╗             ╔════════════╗')
-		print('║ {}╔════════════╗          ║ {}╔════════════╗'.format(player1[0], cpu1[0]))
+		print('║ {}╔════════════╗          ║ {}╔════════════╗'.format(play_view, cpu_view))
 		print('║ {}║░░░░░░░░░░░░║   To     ║ {}║░░░░░░░░░░░░║'.format(player1[1], cpu1[1]))
 		print('║  ║▒▒▒▒▒▒▒▒▒▒▒▒║   The    ║  ║▒▒▒▒▒▒▒▒▒▒▒▒║')
 		print('║  ║░░░░░░░░░░░░║  Victor  ║  ║░░░░░░░░░░░░║')
@@ -135,30 +153,45 @@ class War():
 		print('╚══║░░░░░░░░░░░░║          ╚══║░░░░░░░░░░░░║')
 		print('   ╚════════════╝             ╚════════════╝')
 
-def tie_break(player1, cpu1, player2, cpu2, winner):
-	if winner == 1:
-		x = " "
-		y = ' WIN'
-	elif winner == 'TIE':
-		x = ' '
-		y = ' TIE'
-	else:
-		x = ' '
-		y = 'LOSS'
+	def tie_break(self, player1, cpu1, player2, cpu2, winner):
+		if winner == 1:
+			x = " "
+			y = ' WIN'
+		elif winner == 'TIE':
+			x = ' '
+			y = ' TIE'
+		else:
+			x = ' '
+			y = 'LOSS'
 
-	print('╔════════════╗             ╔════════════╗')
-	print('║ {}╔═╔═══════════╗         ║ {}╔═╔═══════════╗'.format(player1[0], cpu1[0]))
-	print('║ {}║░║ {}         ║         ║ {}║░║ {}         ║'.format(player1[1], player2[0], cpu1[1], cpu2[0]))
-	print('║  ║▒║ {}         ║   A     ║  ║▒║ {}         ║'.format(player2[1], cpu2[1]))
-	print('║  ║░║           ║   BIG   ║  ║░║           ║')
-	print('║  ║▒║     {}     ║ {} {}  ║  ║▒║     {}     ║'.format(player2[1], x, y, cpu2[1]))
-	print('║  ║░║           ║         ║  ║░║           ║')
-	print('║  ║▒║         {} ║         ║  ║▒║         {} ║'.format(player2[1], cpu2[1]))
-	print('╚══║░║         {} ║         ╚══║░║         {} ║'.format(player2[0], cpu2[0]))
-	print('   ╚═╚═══════════╝            ╚═╚═══════════╝')
+		play1view, play2view = player1[0], player2[0]
+		cpu1view, cpu2view = cpu1[0], cpu2[0]
+		if player1[0] == '10':
+			play1view = '1'
+		if cpu1view == '10':
+			cpu1view = '1'
+		if play2view == '10':
+			k = ""
+		else:
+			k = ' '
+
+		if cpu2view == '10':
+			z = ''
+		else:
+			z = ' '
+		print('╔════════════╗             ╔════════════╗')
+		print('║ {}╔═╔═══════════╗         ║ {}╔═╔═══════════╗'.format(play1view, cpu1view))
+		print('║ {}║░║ {}  {}      ║         ║ {}║░║ {}    {}    ║'.format(player1[1], play2view, k, cpu1[1], cpu2view, z))
+		print('║  ║▒║ {}         ║   A     ║  ║▒║ {}         ║'.format(player2[1], cpu2[1]))
+		print('║  ║░║           ║   BIG   ║  ║░║           ║')
+		print('║  ║▒║     {}     ║ {} {}  ║  ║▒║     {}     ║'.format(player2[1], x, y, cpu2[1]))
+		print('║  ║░║           ║         ║  ║░║           ║')
+		print('║  ║▒║         {} ║         ║  ║▒║         {} ║'.format(player2[1], cpu2[1]))
+		print('╚══║░║     {}   {} ║         ╚══║░║     {}   {} ║'.format(k, play2view, z, cpu2view))
+		print('   ╚═╚═══════════╝            ╚═╚═══════════╝')
+
 
 
 if __name__ == "__main__":
 	WAR = War()
 	WAR.game_loop()
-
